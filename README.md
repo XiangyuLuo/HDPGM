@@ -1,2 +1,2 @@
 # HDPGM C code
-C Code for hierarchical and dynamic Poisson graphical models (HDPGM) parallel computing  
+C Code for HDPGM parallel computing  
