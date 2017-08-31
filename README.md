@@ -14,7 +14,7 @@ The idea of the message passing interface (MPI) was employed to parallelize the 
 Assume there are G genomic locations, D conditions, p TFs, R replicates.
 1. Download the source file **HDPGM.c** and the header file **HDPGM.h** in your working directory. 
 2. Prepare your data file (a G by D\*p\*R matrix) where rows correspond to G genomic locations. For the columns, column 1 corresponds to condition 1, TF 1, replicate 1, which are coded as (1,1,1). Column 2 is (1,1,2), ... , column R is (1,1,R), column R+1 is (1,2,1), column p\*R is (1,p,R), column p\*R+1 is (2,1,1) and so on so forth until column D\*p\*R which is (D, p, R).
-3. Name your data file as "Data.txt".
+3. Name your data file as "Data.txt" and put it in your working directory.
 4. In your working directory, make a new directory "PosteriorSamples". Under the "PosteriorSamples", make four new directories: "P\_dp\_t", "cla\_t", "L\_t" and "Lambda\_t".
 5. In the source file **HDPGM.c**, set G, D, p, R, and the maximum cluster number **M**.
 4. Open the terminal, change the current diretory to your working directory and input the following two commands. Note that 10 threads are used here, and you could flexibly set it.
