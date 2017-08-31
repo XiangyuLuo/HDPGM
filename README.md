@@ -17,11 +17,12 @@ Assume there are G genomic locations, D conditions, p TFs, R replicates.
 3. Name your data file as "Data.txt".
 4. In your working directory, make a new directory "PosteriorSamples". Under the "PosteriorSamples", make four new directories: "P\_dp\_t", "cla\_t", "L\_t" and "Lambda\_t".
 5. In the source file **HDPGM.c**, set G, D, p, R, and the maximum cluster number **M**.
-4. Open the terminal, change the current diretory to your working directory and input the following two commands.
-```
+4. Open the terminal, change the current diretory to your working directory and input the following two commands. Note that 10 threads are used here, and you could flexibly set it.
+```linux
 mpicc HDPGM.c -o HDPGM -lm -std=c11
 mpirun -np 10 ./HDPGM
 ```
 
 ## Remarks
-One requirement is that G must be divisible by the number of threads you set. We will fix the limitation soon.
+1. The number of threads must be greater than one.
+2. If G cannot be divisible by the thread number L, the first L-1 threads have \floor{G/L} each and the last thread has G - (L-1)\floor{G/L}.  
