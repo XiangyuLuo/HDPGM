@@ -423,30 +423,15 @@ int main(){
 
 	if(world_rank==0){
 	    //record the how many clusters are there for each iteration
-        fp = fopen("K_t.txt", "a");
+            fp = fopen("log.txt", "a");
 	    fprintf(fp, "Iteration: %d\n", t);
-        fprintf(fp, "cluster number: %d\n", len);
+            fprintf(fp, "cluster number: %d\n", len);
+	    fprintf(fp, "cluster proportion (P_dp_t):\n");
 	    for(int m=0; m<M; m++){
 			fprintf(fp, "%f\t", P_dp_t[m]);
 	    }
-        fprintf(fp, "\n");
-	    /*mark = 0;
-        for(int i=0; i < len; i++){
-            if(cla_star[i] == 2){ //2 corresponds to table 3.
-                mark = 1;
-                break;
-            }
-    	}
-        if(mark == 1){                
-            for(int i=0;i<p;i++){
-                for(int j=0;j<p;j++){
-                    fprintf(fp, "%d ",L_t[2][0][i][j]);
-                }
-                fprintf(fp, "\n");
-            }
-            fprintf(fp, "\n");
-        } */   
-        fclose(fp);
+            fprintf(fp, "\n");  
+            fclose(fp);
 	}
 
         MPI_Barrier(MPI_COMM_WORLD);
