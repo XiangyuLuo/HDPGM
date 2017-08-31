@@ -27,3 +27,4 @@ mpirun -np 10 ./HDPGM
 ## Remarks
 1. The number of threads must be greater than one. 
 2. If G cannot be divisible by the thread number L, the first L-1 threads have \[G/L\] genomic locations each and the last thread has G - (L-1)\[G/L\] genomic locations, where \[x\] is the largest integer less than or equal to x.  
+3. When the program is running, there will be a "log.txt" file showing the running progress.  
