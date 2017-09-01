@@ -21,16 +21,16 @@ int main(){
     
     srand(25082017); //set seed
 	
-	//=============================================================================================================
-	//The parameters you have to input
-    int T = 100000; // number of iterations
-    int S = 50000;  //the iteration number at which we begin to collect posterior samples
-    int thin = 5;   // the thin; in this example, we collect sample 50001, 50006, 50011, ..., 99996
-    int D=3;	    // the number of conditions
-	int p=30;		// the number of TFs
-	int N = 22402;  // the number of genomic locations
-	int M = 20;     // the maximum cluster number
-	int R=2;        // the number of replicates
+    //=============================================================================================================
+    //The parameters you have to input
+    int T = 100000; 		// number of iterations
+    int S = 50000;  		//the iteration number at which we begin to collect posterior samples
+    int thin = 5;   		// the thin; in this example, we collect sample 50001, 50006, 50011, ..., 99996
+    int D=3;	    		// the number of conditions
+    int p=30;			// the number of TFs
+    int N = 22402;  		// the number of genomic locations
+    int M = 20;     		// the maximum cluster number
+    int R=2;        		// the number of replicates
     //==============================================================================================================
     lgth = N / world_size;
     lgth_last = N - lgth * (world_size-1);
@@ -49,7 +49,7 @@ int main(){
     }
 
     int *cla_t, *cla_star, *****Y_t, ****X;
-    
+    //allocate memory for cla_t (cluster indicators) on thread 0
     if(world_rank==0){
         cla_t = (int *)malloc(N*sizeof(int));
         cla_star = (int *)malloc(N*sizeof(int));
@@ -60,21 +60,21 @@ int main(){
         X = make4Darray_int_continuousMem(N, D, R, p);
     }
 
-    double alpha = 2;
+    double alpha = 2; //alpha is a hyper parameter in the Dirichlet distribution for 
+		      // P_dp_t (cluster membership proportions)
     double *alpha_prob, *P_dp_t;
     P_dp_t = (double *)malloc(M*sizeof(double));
     if(world_rank == 0){
         alpha_prob = (double *)malloc(M*sizeof(double));
     }
     
-    double ****Lambda_t;
-    int ****L_t;
+    double ****Lambda_t; //Lambda_t is the dependence intensity array
+    int ****L_t;	 // L_t indicates TF network structures
     Lambda_t = make4Darray_continuousMem(M , D, p, p);
     if(world_rank==0){
-        
         L_t = make4Darray_int_continuousMem(M, D, p, p);
     }
-
+    //hyper-parameters
     double par_p_t=1.0/4;
     double par_0[2], par_1[2], par_2[2];
     par_0[0] = 2;
@@ -85,7 +85,7 @@ int main(){
     par_2[1] = 1;
     FILE* fp;
     double *prob;
-
+    //initialization on thread 0
     if(world_rank==0){
         
         fp=fopen("Data.txt","r");
@@ -119,14 +119,14 @@ int main(){
         for(int m=0;m<M;m++){
             prob[m]=1.0/M;
         }
-    
+        //initialize cla_t
         for(int n=0;n<N;n++){
             cla_t[n]=rdiscrete(M, prob);
         }
         free(prob);
     
     
-    
+        //initialize latent variables Y_t
         for(int d=0;d<D;d++){
             for(int n=0;n<N;n++){
                 for(int r=0;r<R;r++){
@@ -134,15 +134,13 @@ int main(){
                 		for(int j=i; j<p; j++){
                 			if(j==i){
                 				Y_t[n][d][r][i][j] = X[n][d][r][i];
-							}else{
-								Y_t[n][d][r][i][j] = 0;
-								Y_t[n][d][r][j][i] = 0;
-							}
-						}
+					}else{
+						Y_t[n][d][r][i][j] = 0;
+						Y_t[n][d][r][j][i] = 0;
 					}
-                    
+				}
+			}
                 }
-                
             }
         }
     }//the end of if(world_rank == 0)
@@ -151,7 +149,7 @@ int main(){
     if(world_rank < world_size-1){
     	Y_t_block = make5Darray_int_continuousMem(lgth, D, R, p, p);
     }else{
-		Y_t_block = make5Darray_int_continuousMem(lgth_last, D, R, p, p);
+	Y_t_block = make5Darray_int_continuousMem(lgth_last, D, R, p, p);
     }
 
 
@@ -166,11 +164,11 @@ int main(){
         //send blocks of cla_t and Y_t to thread 1 to #cores-1
         for(int nthread = 1; nthread < world_size; nthread++){
 	    	if(nthread < world_size-1){
-            	MPI_Send(&(cla_t[lgth*nthread]),lgth,MPI_INT,nthread,222,MPI_COMM_WORLD);
-            	MPI_Send(&(Y_t[lgth*nthread][0][0][0][0]),lgth*D*R*p*p,MPI_INT,nthread,333,MPI_COMM_WORLD);
+            		MPI_Send(&(cla_t[lgth*nthread]),lgth,MPI_INT,nthread,222,MPI_COMM_WORLD);
+            		MPI_Send(&(Y_t[lgth*nthread][0][0][0][0]),lgth*D*R*p*p,MPI_INT,nthread,333,MPI_COMM_WORLD);
 	    	}else{
-            	MPI_Send(&(cla_t[lgth*nthread]),lgth_last, MPI_INT,nthread,222,MPI_COMM_WORLD);
-            	MPI_Send(&(Y_t[lgth*nthread][0][0][0][0]),lgth_last*D*R*p*p,MPI_INT,nthread,333,MPI_COMM_WORLD);
+            		MPI_Send(&(cla_t[lgth*nthread]),lgth_last, MPI_INT,nthread,222,MPI_COMM_WORLD);
+            		MPI_Send(&(Y_t[lgth*nthread][0][0][0][0]),lgth_last*D*R*p*p,MPI_INT,nthread,333,MPI_COMM_WORLD);
 	    	}
         }
 
@@ -178,23 +176,23 @@ int main(){
             cla_t_block[n] = cla_t[n];
             for (int d=0;d<D;d++){
                 for (int i=0;i<p;i++){
-                    for (int j=0;j<p;j++){
-                        for (int r=0;r<R;r++){
-                            Y_t_block[n][d][r][i][j] = Y_t[n][d][r][i][j];
-                        }
-                    }
+                    	for (int j=0;j<p;j++){
+                        	for (int r=0;r<R;r++){
+                            		Y_t_block[n][d][r][i][j] = Y_t[n][d][r][i][j];
+                        	}
+                    	}
                 }
             }
         }
     }else{
         //receive messages from thread 0
-		if(world_rank < world_size-1){
+	if(world_rank < world_size-1){
         	MPI_Recv(&(cla_t_block[0]),lgth,MPI_INT,0,222,MPI_COMM_WORLD,MPI_STATUS_IGNORE);
         	MPI_Recv(&(Y_t_block[0][0][0][0][0]), lgth*D*R*p*p, MPI_INT, 0, 333, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     	}else{
         	MPI_Recv(&(cla_t_block[0]),lgth_last,MPI_INT,0,222,MPI_COMM_WORLD,MPI_STATUS_IGNORE);
         	MPI_Recv(&(Y_t_block[0][0][0][0][0]), lgth_last*D*R*p*p, MPI_INT, 0, 333, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-		}
+	}
     }
 
     MPI_Barrier(MPI_COMM_WORLD);
@@ -237,36 +235,35 @@ int main(){
             }
             /* sample cluster proportion */
             sample_P_dp(N, M, cla_t,alpha,P_dp_t);
-
         }
 
         //broadcast P_dp_t and Lambda_t to all other threads
-		if(world_rank == 0){
-			for(int nthread=1; nthread < world_size; nthread++){
+	if(world_rank == 0){
+		for(int nthread=1; nthread < world_size; nthread++){
         		MPI_Send(&(Lambda_t[0][0][0][0]), M*D*p*p, MPI_DOUBLE, nthread, 222, MPI_COMM_WORLD);
         		MPI_Send(P_dp_t, M, MPI_DOUBLE, nthread, 333, MPI_COMM_WORLD);
-			}
-        }else{
-			MPI_Recv(&(Lambda_t[0][0][0][0]), M*D*p*p, MPI_DOUBLE, 0, 222, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-			MPI_Recv(P_dp_t, M, MPI_DOUBLE, 0, 333, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 		}
+        }else{
+		MPI_Recv(&(Lambda_t[0][0][0][0]), M*D*p*p, MPI_DOUBLE, 0, 222, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+		MPI_Recv(P_dp_t, M, MPI_DOUBLE, 0, 333, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+	}
 
         /* sample class membership cla_t_block*/
         MPI_Barrier(MPI_COMM_WORLD);
 
-		if(world_rank < world_size - 1){
+	if(world_rank < world_size - 1){
         	for (int n=0;n<lgth;n++){
             		cla_t_block[n]=sample_cla(M, D, p, R, n, Lambda_t,P_dp_t,Y_t_block);
         	}
-		}else{
+	}else{
         	for (int n=0;n<lgth_last;n++){
             		cla_t_block[n]=sample_cla(M, D, p, R, n, Lambda_t,P_dp_t,Y_t_block);
         	}		
-		}
+	}
         
         MPI_Barrier(MPI_COMM_WORLD);
         /* sample latent counts Y_t_block*/
-		if(world_rank < world_size - 1){
+	if(world_rank < world_size - 1){
         	for(int n=0; n<lgth; n++){
             		for(int d=0;d<D;d++){
                 		for (int r=0;r<R;r++){
@@ -274,7 +271,7 @@ int main(){
                 		}
             		}
         	}
-		}else{
+	}else{
         	for(int n=0; n<lgth_last; n++){
             		for(int d=0;d<D;d++){
                 		for (int r=0;r<R;r++){
@@ -282,7 +279,7 @@ int main(){
                 		}
             		}
         	}
-		}
+	}
         MPI_Barrier(MPI_COMM_WORLD);
         
         
@@ -313,14 +310,14 @@ int main(){
             }
             
             for(int nthread = 1; nthread < world_size; nthread++){
-				if(nthread < world_size-1){
+		if(nthread < world_size-1){
                 	MPI_Recv(&(cla_t[nthread*lgth]), lgth, MPI_INT, nthread, 444, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
                 	MPI_Recv(&(Y_t[nthread*lgth][0][0][0][0]), D*R*lgth*p*p, MPI_INT, nthread, 555, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
             	}else{
                 	MPI_Recv(&(cla_t[nthread*lgth]), lgth_last, MPI_INT, nthread, 444, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
                 	MPI_Recv(&(Y_t[nthread*lgth][0][0][0][0]), D*R*lgth_last*p*p, MPI_INT, nthread, 555, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-				}
-	    	}
+		}
+	    }
         
         
             //Gibbs sampler visulization
@@ -359,7 +356,7 @@ int main(){
             //////////////////////
             //write files
             /////////////////////
-	    	if((t>=S)&(t%thin==1)){//begin if
+	    if((t>=S)&(t%thin==1)){//begin if
             	strcpy(filename, "PosteriorSamples/Lambda_t/Lambda_t_");
             	sprintf(ind, "%d", t);
             	strcat(filename, ind);
@@ -367,13 +364,13 @@ int main(){
             	fp = fopen(filename, "w");
             	for(int m=0; m<M; m++){
                 	for (int d=0;d<D;d++){
-                    	for (int i=0;i<p;i++){
-                        	for (int j=0;j<p;j++){
-                            	fprintf(fp, "%f\t", Lambda_t[m][d][i][j]);
-                        	}
-                        	fprintf(fp, "\n");
-                    	}
-                    	fprintf(fp, "\n");
+                    		for (int i=0;i<p;i++){
+                        		for (int j=0;j<p;j++){
+                            			fprintf(fp, "%f\t", Lambda_t[m][d][i][j]);
+                        		}
+                        		fprintf(fp, "\n");
+                    		}
+                    		fprintf(fp, "\n");
                 	}
             	}
             	fclose(fp);
@@ -385,13 +382,13 @@ int main(){
             	fp = fopen(filename, "w");
             	for(int m=0; m<M; m++){
                 	for (int d=0;d<D;d++){
-                    	for (int i=0;i<p;i++){
-                        	for (int j=0;j<p;j++){
-                            	fprintf(fp, "%d\t", L_t[m][d][i][j]);
-                        	}
-                        	fprintf(fp, "\n");
-                    	}
-                    	fprintf(fp, "\n");
+                    		for (int i=0;i<p;i++){
+                        		for (int j=0;j<p;j++){
+                            			fprintf(fp, "%d\t", L_t[m][d][i][j]);
+                        		}
+                        		fprintf(fp, "\n");
+                    		}
+                    		fprintf(fp, "\n");
                 	}
             	}
             	fclose(fp);
@@ -404,7 +401,7 @@ int main(){
             	for(int m=0; m<M; m++){
                 	fprintf(fp, "%f\t", P_dp_t[m]);
             	}
-	    		fprintf(fp, "\n");
+	    	fprintf(fp, "\n");
             	fclose(fp);
         
         
@@ -416,9 +413,9 @@ int main(){
             	for(int n=0; n<N; n++){
                 	fprintf(fp, "%d\t", cla_t[n]);
             	}
-	    		fprintf(fp, "\n");
+	    	fprintf(fp, "\n");
             	fclose(fp);  
-	    	}//end if      
+	    }//end if      
         }
 
 	if(world_rank==0){
@@ -439,8 +436,8 @@ int main(){
 
     t2 = MPI_Wtime();
     if(world_rank==0){
-		printf("Output done!\n");
-		printf("Cost %f seconds.", t2 - t1);
+	printf("Output done!\n");
+	printf("Cost %f seconds.", t2 - t1);
     }
     free(P_dp_t);
     delet4Darray_continuousMem(Lambda_t, M , D, p, p);
