@@ -15,7 +15,7 @@ Assume there are N genomic locations, D conditions, p TFs, and R replicates.
 1. Download the source file **HDPGM.c** and the header file **HDPGM.h** in your working directory. 
 2. Prepare your data file (a N by D\*p\*R matrix with row names and column names removed) where rows correspond to N genomic locations. For the columns, column 1 corresponds to (condition 1, TF 1, replicate 1), which is coded as (1,1,1). Using the same notation, column 2 is (1,1,2), ... , column R is (1,1,R), column R+1 is (1,2,1), column p\*R is (1,p,R), column p\*R+1 is (2,1,1) and so on so forth until column D\*p\*R which is (D, p, R).
 3. Name your data file as "Data.txt" and put it in your working directory.
-4. In your working directory, make a new directory "PosteriorSamples". Under the folder "PosteriorSamples", make four new directories: "P\_dp\_t", "cla\_t", "L\_t", and "Lambda\_t" which are used to collect posterior samples.
+4. In your working directory, make a new directory "PosteriorSamples". Under the folder "PosteriorSamples", make four new directories: "P\_dp\_t", "cla\_t", "L\_t", and "Lambda\_t" which are used to collect posterior samples for cluster proportions, cluster indicators, edge indicators, and dependence intensity parameters.
 5. In the source file **HDPGM.c**, set N, D, p, R, and the maximum cluster number **M**.
 4. Open the terminal, change the current diretory to your working directory and input the following two commands (note that 10 threads are used here, and you could flexibly set it). 
 ```
