@@ -27,9 +27,9 @@ int main(){
     int S = 50000;  		//the iteration number at which we begin to collect posterior samples
     int thin = 5;   		// the thin; in this example, we collect sample 50001, 50006, 50011, ..., 99996
     int D=3;	    		// the number of conditions
-    int p=30;			// the number of TFs
-    int N = 22402;  		// the number of genomic locations
-    int M = 20;     		// the maximum cluster number
+    int p=10;			// the number of TFs
+    int N = 5000;  		// the number of genomic locations
+    int M = 10;     		// the maximum cluster number
     int R=2;        		// the number of replicates
     //==============================================================================================================
     lgth = N / world_size;
