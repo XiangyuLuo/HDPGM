@@ -22,7 +22,7 @@ Assume there are N genomic locations, D conditions, p TFs, and R replicates.
 mpicc HDPGM.c -o HDPGM -lm -std=c11
 mpirun -np 10 ./HDPGM
 ```
-Note that 10 threads are used here, and you could flexibly set it.
+  Note that 10 threads are used here, and you could flexibly set it.
 
 ## Remarks
 1. The number of threads must be greater than one. 
