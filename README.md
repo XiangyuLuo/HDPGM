@@ -1,6 +1,6 @@
 # HDPGM C code
 
-C code for HDPGM parallel computing. 
+C code for HDPGM parallel computing. Currently, the code can be run on Linux ans MacOS.
 
 ## About HDPGM
 HDPGM is short for *the hiearachical and dynamic Poisson graphical model*. The model was proposed by Xiangyu Luo and Yingying Wei to recover transcription factor (TF) networks from ChIP-seq count data. On the one hand, TF networks are heterogeneous across the genome. On the other hand, TF networks are dynamic with respect to different cell types. Under the mild assumption that the whole genome can be partitioned into several (unknown) sets and genomic locations in the same set share the same TF networks, HDPGM can be used to simultaneously construct the dynamic TF networks and cluster genomic locations without need to pre-specify the number of clusters.
@@ -18,12 +18,12 @@ Assume there are N genomic locations, D conditions, p TFs, and R replicates.
 4. In your working directory, make a new directory "PosteriorSamples". Under the folder "PosteriorSamples", make four new directories: "P\_dp\_t", "cla\_t", "L\_t", and "Lambda\_t" which are used to collect posterior samples for cluster proportions, cluster indicators, edge indicators, and dependence intensity parameters.
 5. In the source file **HDPGM.c**, set N, D, p, R, and the maximum cluster number **M**.
 4. Open the terminal, change the current diretory to your working directory and input the following two commands (note that 10 threads are used here, and you could flexibly set it). 
-a. For Linux and MacOS users, 
+
 ```
 mpicc HDPGM.c -o HDPGM -lm -std=c11
 mpirun -np 10 ./HDPGM
 ```
-b. For windows users, 
+
 
 ## Remarks
 1. The number of threads must be greater than one. 
