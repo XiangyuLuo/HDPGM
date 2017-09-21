@@ -60,8 +60,7 @@ int main(){
         X = make4Darray_int_continuousMem(N, D, R, p);
     }
 
-    double alpha = 2; //alpha is a hyper parameter in the Dirichlet distribution for 
-		      // P_dp_t (cluster membership proportions)
+    double alpha = 2; //alpha is the concentration parameter in the Dirichlet Process DP(\alpha H)
     double *alpha_prob, *P_dp_t;
     P_dp_t = (double *)malloc(M*sizeof(double));
     if(world_rank == 0){
@@ -226,9 +225,9 @@ int main(){
                         break;
                     }
                 }
-                if(mark==0) {                   //mark==0 means m is in cla_diff//
+                if(mark==0) {                   //mark==0 means m is in cla_diff
                     sample_H(D, p, par_0, par_1, par_2,par_p_t,L_t[m], Lambda_t[m]);
-                }else {            //mark==1 means m is in cla_star//
+                }else {            //mark==1 means m is in cla_star
                     sample_L_m(D, p, Lambda_t[m],par_p_t,par_0,par_1, L_t[m]);
                     sample_Lambda_m(D, R, N, p, Y_t,L_t,cla_t,m,par_0,par_1,par_2,Lambda_t[m]);
                 }
