@@ -17,12 +17,12 @@ Assume there are N genomic locations, D conditions, p TFs, and R replicates.
 3. Name your data file as "Data.txt" and put it in your working directory.
 4. In your working directory, make a new directory "PosteriorSamples". Under the folder "PosteriorSamples", make four new directories: "P\_dp\_t", "cla\_t", "L\_t", and "Lambda\_t" which are used to collect posterior samples.
 5. In the source file **HDPGM.c**, set N, D, p, R, and the maximum cluster number **M**.
-4. Open the terminal, change the current diretory to your working directory and input the following two commands. 
+4. Open the terminal, change the current diretory to your working directory and input the following two commands (note that 10 threads are used here, and you could flexibly set it). 
 ```
 mpicc HDPGM.c -o HDPGM -lm -std=c11
 mpirun -np 10 ./HDPGM
 ```
-  Note that 10 threads are used here, and you could flexibly set it.
+  
 
 ## Remarks
 1. The number of threads must be greater than one. 
